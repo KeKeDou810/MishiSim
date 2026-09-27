@@ -1,0 +1,3 @@
+<linker>
+  <assembly fullname="MoonSharp.Interpreter" preserve="all" />
+</linker>

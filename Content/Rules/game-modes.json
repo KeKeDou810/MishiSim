@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "modes": [
+    {
+      "id": "standard", "name": "标准模式",
+      "deckSize": 50, "maxCopies": 4,
+      "requireSameFaction": true, "genericFaction": "不明",
+      "openingHand": 5, "drawPerTurn": 1,
+      "firstTurnSkip": ["Rebuild", "TimeReset", "Combat"]
+    },
+    {
+      "id": "test", "name": "测试模式（允许重复卡）",
+      "deckSize": 50, "maxCopies": 49,
+      "requireSameFaction": true, "genericFaction": "不明",
+      "openingHand": 5, "drawPerTurn": 1,
+      "firstTurnSkip": ["Rebuild", "TimeReset", "Combat"],
+      "exampleDeck": { "PD01-001": 1, "PD01-004": 49 }
+    }
+  ]
+}
