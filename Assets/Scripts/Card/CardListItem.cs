@@ -19,26 +19,29 @@ public sealed class CardListItem : MonoBehaviour, IPointerClickHandler, IPointer
         Card = card; InDeck = inDeck; Owner = owner;
         if (label == null) label = GetComponentInChildren<TMP_Text>(true);
         label.raycastTarget = false;
-        label.text = inDeck ? card.Name : $"{card.Name}\n<size=75%>{card.Id} · {card.ColorName}\n{card.Faction}</size>";
+        label.text = inDeck ? card.Name : $"{card.Name}\n<size=75%>{card.Id}\n{card.Faction}</size>";
         if (card.IsPlayer) label.text += "\n<size=75%>契约附带</size>";
         if (artwork == null) artwork = transform.Find("Image").GetComponent<Image>();
         artwork.gameObject.SetActive(true);
         artwork.raycastTarget = false;
         artwork.sprite = owner.GetArtwork(card);
         artwork.preserveAspect = true;
-        artwork.color = artwork.sprite == null ? new Color(.3f, .3f, .3f) : Color.white;
+        artwork.color = artwork.sprite == null ? AtomOneTheme.Raised : Color.white;
         var artRect = artwork.rectTransform;
         var textRect = label.rectTransform;
         if (inDeck)
         {
             Stretch(artRect, Vector2.zero, Vector2.one, new Vector2(2, 2), new Vector2(-2, -2));
-            hoverBackground = new GameObject("Hover name background", typeof(RectTransform), typeof(Image));
-            hoverBackground.transform.SetParent(transform, false);
+            if (hoverBackground == null)
+            {
+                hoverBackground = new GameObject("Hover name background", typeof(RectTransform), typeof(Image));
+                hoverBackground.transform.SetParent(transform, false);
+            }
             var bg = hoverBackground.GetComponent<Image>();
-            bg.color = new Color(0, 0, 0, .88f); bg.raycastTarget = false;
+            bg.color = AtomOneTheme.Surface; bg.raycastTarget = false;
             Stretch((RectTransform)hoverBackground.transform, Vector2.zero, new Vector2(1, .48f), Vector2.zero, Vector2.zero);
             Stretch(textRect, Vector2.zero, new Vector2(1, .48f), new Vector2(4, 3), new Vector2(-4, -3));
-            label.color = Color.white; label.fontSize = 16;
+            label.color = AtomOneTheme.Text; label.fontSize = 16;
             label.enableAutoSizing = true; label.fontSizeMin = 11; label.fontSizeMax = 16;
             label.alignment = TextAlignmentOptions.Center;
             label.transform.SetAsLastSibling();

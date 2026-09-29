@@ -39,6 +39,7 @@ public static class ZoneRegistry
             {
                 if (node.OwnerId < 0) throw new InvalidOperationException("玩家/防御圆阵需要 OwnerId。");
                 board.SetPlayerOrDefenseNode(node.NodeId, node.OwnerId);
+                if (node.NodeKind == BoardNodeKind.Player) board.SetPlayerNode(node.NodeId, node.OwnerId);
             }
             foreach (var neighbour in node.Neighbours)
             {

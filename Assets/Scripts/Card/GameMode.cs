@@ -16,11 +16,14 @@ public sealed class GameMode
     public string GenericFaction { get; set; } = "不明";
     public int OpeningHand { get; set; } = 5;
     public int DrawPerTurn { get; set; } = 1;
+    public int TurnTimeSeconds { get; set; } = 120;
+    public int ActionTimeRefundSeconds { get; set; } = 5;
+    public int ResponseTimeSeconds { get; set; } = 20;
     public string[] FirstTurnSkip { get; set; } = { "Rebuild", "TimeReset", "Combat" };
     public Dictionary<string, int> ExampleDeck { get; set; }
     public Dictionary<string, int> CardLimits { get; set; } = new Dictionary<string, int>();
     public MatchDrawRules BattleRules() => new MatchDrawRules(OpeningHand, DrawPerTurn,
-        FirstTurnSkip.Select(p => (TestTurnPhase)Enum.Parse(typeof(TestTurnPhase), p)));
+        FirstTurnSkip.Select(p => (TestTurnPhase)Enum.Parse(typeof(TestTurnPhase), p)), TurnTimeSeconds, ActionTimeRefundSeconds, ResponseTimeSeconds);
 
     public static GameMode[] Load(string path)
     {
@@ -35,6 +38,8 @@ public sealed class GameMode
                 throw new InvalidDataException("模式必须有唯一 id 和 name。");
             if (mode.DeckSize < 2 || mode.DeckSize > 200 || mode.MaxCopies < 1 || mode.MaxCopies > mode.DeckSize ||
                 mode.OpeningHand < 0 || mode.OpeningHand >= mode.DeckSize || mode.DrawPerTurn < 0 || mode.DrawPerTurn > 20 ||
+                mode.TurnTimeSeconds < 1 || mode.TurnTimeSeconds > 3600 || mode.ActionTimeRefundSeconds < 0 || mode.ActionTimeRefundSeconds > mode.TurnTimeSeconds ||
+                mode.ResponseTimeSeconds < 1 || mode.ResponseTimeSeconds > 300 ||
                 string.IsNullOrWhiteSpace(mode.GenericFaction) || mode.FirstTurnSkip == null ||
                 mode.FirstTurnSkip.Any(p => p != "Rebuild" && p != "TimeReset" && p != "Combat"))
                 throw new InvalidDataException($"模式 {mode.Id} 的数量或首回合跳过阶段配置无效。");

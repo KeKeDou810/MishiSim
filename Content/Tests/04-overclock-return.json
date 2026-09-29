@@ -1,0 +1,56 @@
+{
+  "Name": "超频与契约离场",
+  "Instructions": "P1契约被覆盖在普通时魔下，使用决策卡破坏该叠放，观察整体离场、玩家翻面与抽一。回手/回库需配置对应Lua后测试。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Main",
+  "Cost": [
+    4,
+    4
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "White",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 0,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Board",
+      "Node": 4,
+      "StackOrder": 1
+    },
+    {
+      "Id": "PD01-014-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    }
+  ]
+}

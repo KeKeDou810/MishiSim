@@ -1,0 +1,55 @@
+{
+  "Name": "龙蛋转化与动态力量",
+  "Instructions": "召唤紫晶，选择发动登场效果并选龙蛋，再选择空圆阵。生成的飞龙时间为龙蛋当前时间+1，力量按时间×1000计算，原龙蛋消灭。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Main",
+  "Cost": [
+    11,
+    11
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "White",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 0,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD03-T01-C",
+      "Owner": 0,
+      "Zone": "OffField",
+      "Node": 0
+    },
+    {
+      "Id": "PD03-011-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    }
+  ]
+}

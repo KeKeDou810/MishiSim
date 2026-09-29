@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
+using PrimeTween;
 
 public class BattleCard : MonoBehaviour
 {
     [SerializeField] private CardVisual _visual;
+    [SerializeField] private BattleCardPowerLabel powerLabel;
+    public void UpdatePowerLabel(bool visible) { if (powerLabel != null) powerLabel.Apply(Definition, EffectivePower, visible); }
 
     /// <summary>The host-assigned identity, shared by all peers for this card's match lifetime.</summary>
     public Guid InstanceId { get; private set; }
@@ -12,11 +15,43 @@ public class BattleCard : MonoBehaviour
 
     /// <summary>The runtime definition, or null until assigned.</summary>
     public CardDefinition Definition { get; private set; }
+    public int EffectivePower { get; internal set; }
+    public int EffectiveTime { get; internal set; }
     public CardPlacementZoneView CurrentZone { get; internal set; }
     // Presentation facing relative to the zone anchor, independent of the local camera.
     public Quaternion PlacementRotationOffset { get; set; } = Quaternion.identity;
+    [SerializeField, Min(.01f)] private float moveDuration = .22f;
+    private Tween movement;
+    private bool hasPose;
+    private Vector3 targetPosition, targetScale;
+    private Quaternion targetRotation;
+    public void StopMovement()
+    {
+        if (movement.isAlive) movement.Stop();
+        hasPose = false;
+    }
+    public void MoveTo(Vector3 position, Quaternion rotation, Vector3? scale = null, bool immediate = false)
+    {
+        Vector3 size = scale ?? transform.localScale;
+        if (hasPose && !immediate && (position - targetPosition).sqrMagnitude < .0000001f &&
+            Quaternion.Angle(rotation, targetRotation) < .01f && (size - targetScale).sqrMagnitude < .0000001f &&
+            (movement.isAlive || ((transform.position - position).sqrMagnitude < .0000001f &&
+                Quaternion.Angle(transform.rotation, rotation) < .01f && (transform.localScale - size).sqrMagnitude < .0000001f))) return;
+        bool first = !hasPose;
+        if (movement.isAlive) movement.Stop();
+        hasPose = true; targetPosition = position; targetRotation = rotation; targetScale = size;
+        if (immediate || !Application.isPlaying || first)
+        { transform.SetPositionAndRotation(position, rotation); transform.localScale = size; return; }
+        var from = transform.position; var facing = transform.rotation; var initialScale = transform.localScale;
+        movement = Tween.Custom(this, 0f, 1f, moveDuration, (card, t) => {
+            card.transform.SetPositionAndRotation(Vector3.Lerp(from, position, t), Quaternion.Slerp(facing, rotation, t));
+            card.transform.localScale = Vector3.Lerp(initialScale, size, t);
+        }, ease: Ease.OutCubic, useUnscaledTime: true);
+    }
+    private void OnDisable() { if (movement.isAlive) movement.Stop(); hasPose = false; }
     private void OnDestroy()
     {
+        if (movement.isAlive) movement.Stop();
         if (CurrentZone != null) CurrentZone.RemoveView(this);
     }
 
@@ -65,5 +100,10 @@ public class BattleCard : MonoBehaviour
 
         if (_visual != null)
             _visual.Bind(definition);
+    }
+    public void ClearDefinition()
+    {
+        Definition = null;
+        if (_visual != null) _visual.HideFace();
     }
 }

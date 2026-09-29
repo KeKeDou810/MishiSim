@@ -1,0 +1,64 @@
+{
+  "Name": "登场与组合加成",
+  "Instructions": "从手牌召唤杰夫瑞，选择发动并选目标；再召唤爆劈龙，检查叠加、结束回合到期和日志。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Main",
+  "Cost": [
+    4,
+    4
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "White",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 0,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-002-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-009-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-005-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-014-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    }
+  ]
+}

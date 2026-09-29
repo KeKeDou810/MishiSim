@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 public sealed class DeckModel
 {
     private readonly Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> identities = new Dictionary<string, string>(StringComparer.Ordinal);
     private Dictionary<string, int> limits = new Dictionary<string, int>(StringComparer.Ordinal);
     public GameMode Mode { get; }
     public DeckModel(GameMode mode = null) { Mode = mode ?? new GameMode(); }
@@ -36,18 +37,31 @@ public sealed class DeckModel
         limits = new Dictionary<string, int>(loaded, StringComparer.Ordinal);
     }
 
+    // Filter card kinds, not remaining copies: adding a fourth copy must not move the list under the pointer.
+    public bool IsLibraryEligible(CardDefinition card)
+    {
+        if (card == null || card.IsToken) return false;
+        if (Contract == null) return true;
+        if (card.IsContract || card.IsPlayer || string.IsNullOrWhiteSpace(card.Faction)) return false;
+        if (Mode.RequireSameFaction && card.Faction != Mode.GenericFaction && card.Faction != Contract.Faction) return false;
+        if (limits.TryGetValue(card.RulesId, out int limit) && limit == 0) return false;
+        return !Mode.CardLimits.TryGetValue(card.RulesId, out int modeLimit) || modeLimit > 0;
+    }
+
     public bool TryAdd(CardDefinition card, out string error)
     {
         error = null;
         if (card == null) { error = "卡片不存在。"; return false; }
+        if (card.IsToken) { error = "衍生物只能由效果生成，不能加入卡组。"; return false; }
         if (card.IsPlayer) { error = "玩家卡由契约自动附带，不加入主卡组。"; return false; }
         if (string.IsNullOrWhiteSpace(card.Faction)) { error = $"{card.Id} 尚未配置国家。"; return false; }
-        int limit = limits.TryGetValue(card.Id, out int configured) ? Math.Min(configured, Mode.MaxCopies) : Mode.MaxCopies;
-        if (Mode.CardLimits.TryGetValue(card.Id, out int modeLimit)) limit = Math.Min(limit, modeLimit);
+        int limit = limits.TryGetValue(card.RulesId, out int configured) ? Math.Min(configured, Mode.MaxCopies) : Mode.MaxCopies;
+        if (Mode.CardLimits.TryGetValue(card.RulesId, out int modeLimit)) limit = Math.Min(limit, modeLimit);
         counts.TryGetValue(card.Id, out int count);
-        if (count >= limit)
+        int sharedCount = counts.Where(entry => identities[entry.Key] == card.RulesId).Sum(entry => entry.Value);
+        if (sharedCount >= limit)
         {
-            error = limit == 0 ? $"{card.Id} 是禁卡。" : $"{card.Id} 最多可放 {limit} 张。";
+            error = limit == 0 ? $"{card.RulesId} 是禁卡。" : $"{card.RulesId} 所有版本合计最多可放 {limit} 张。";
             return false;
         }
         if (card.IsContract)
@@ -62,6 +76,7 @@ public sealed class DeckModel
             { error = $"只能加入国家为「{Contract.Faction}」或「{Mode.GenericFaction}」的卡片。"; return false; }
         }
         if (Count >= Mode.DeckSize) { error = $"卡组上限 {Mode.DeckSize} 张（包含契约，不包含玩家卡）。"; return false; }
+        identities[card.Id] = card.RulesId;
         counts[card.Id] = count + 1;
         if (card.IsContract) Contract = card;
         return true;

@@ -11,6 +11,20 @@ public sealed class BoardNodeView : CardPlacementZoneView
     public int NodeId => nodeId;
     public BoardNodeKind NodeKind => nodeKind;
     public System.Collections.Generic.IReadOnlyList<BoardNodeView> Neighbours => Array.AsReadOnly(neighbours);
+    private bool hasPlayerCards;
+    public void SetPlayerCardsPresent(bool value)
+    {
+        if (hasPlayerCards == value) return;
+        hasPlayerCards = value; RefreshPlacement();
+    }
+    public override Pose GetPlacementPose(int index)
+    {
+        Pose pose = base.GetPlacementPose(index);
+        pose.position += CardAnchor.rotation * new Vector3(0, 0, -.012f * index);
+        // Leave room above the board for the two back-to-back player cards.
+        if (nodeKind == BoardNodeKind.Player || hasPlayerCards) pose.position += CardAnchor.rotation * new Vector3(0, 0, -.04f);
+        return pose;
+    }
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;

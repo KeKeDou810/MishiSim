@@ -5,6 +5,7 @@ public sealed class DeckZoneView : CardPlacementZoneView
 {
     public override CardZoneKind Kind => CardZoneKind.Deck;
     private readonly List<GameObject> backs = new List<GameObject>();
+    protected override int VisibleCount => backs.Count;
     // Anonymous proxies: no definition, instance identity, hover or drag is exposed.
     public void SetHiddenCount(int count, BattleCard prefab)
     {
@@ -27,7 +28,7 @@ public sealed class DeckZoneView : CardPlacementZoneView
         for (int i = 0; i < backs.Count; i++)
         {
             Pose pose = GetPlacementPose(i);
-            backs[i].transform.SetPositionAndRotation(pose.position, pose.rotation);
+            backs[i].GetComponent<BattleCard>().MoveTo(pose.position, pose.rotation);
             // Zone scales control the board mesh, not card dimensions.
             backs[i].transform.localScale = new Vector3(1 / transform.lossyScale.x, 1 / transform.lossyScale.y, 1 / transform.lossyScale.z);
         }

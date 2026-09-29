@@ -20,6 +20,16 @@ public abstract class CardPlacementZoneView : MonoBehaviour, IPointerEnterHandle
     [SerializeField, Min(0)] private int visualCapacity;
     [SerializeField] private bool faceDown;
     [SerializeField] private GameObject hoverHighlight;
+    [SerializeField] private BattleCardPowerLabel countLabel;
+    protected virtual int VisibleCount => cards.Count;
+    protected virtual void LateUpdate()
+    {
+        if (countLabel == null) return;
+        bool hovered = IsHovered;
+        foreach (var card in cards)
+            if (card != null && card.TryGetComponent<BattleCardPointer>(out var pointer) && pointer.IsHovered) { hovered = true; break; }
+        countLabel.ApplyCount(VisibleCount, hovered, GetPlacementPose(Mathf.Max(0, VisibleCount - 1)).position);
+    }
     private readonly List<BattleCard> cards = new List<BattleCard>();
     public abstract CardZoneKind Kind { get; }
     public string ZoneId => zoneId;
@@ -55,6 +65,7 @@ public abstract class CardPlacementZoneView : MonoBehaviour, IPointerEnterHandle
     {
         ZoneRegistry.Unregister(this);
         SetHover(false);
+        if (countLabel != null) countLabel.ApplyCount(0, false, Vector3.zero);
     }
     public void OnPointerEnter(PointerEventData e) { SetHover(true); }
     public void OnPointerExit(PointerEventData e) { SetHover(false); }
@@ -79,12 +90,12 @@ public abstract class CardPlacementZoneView : MonoBehaviour, IPointerEnterHandle
         if (card == null || !card.IsInitialized) return;
         PlacementRequested?.Invoke(this, card);
     }
-    public bool PlaceApproved(BattleCard card)
+    public bool PlaceApproved(BattleCard card, bool allowBoardStack = false)
     {
         if (card == null || !card.IsInitialized) return false;
         cards.RemoveAll(c => c == null);
         if (cards.Contains(card)) { RefreshPlacement(); return true; }
-        if (visualCapacity > 0 && cards.Count >= visualCapacity) return false;
+        if (visualCapacity > 0 && cards.Count >= visualCapacity && !(allowBoardStack && Kind == CardZoneKind.Board && layout == CardZoneLayout.Stack)) return false;
         if (layout == CardZoneLayout.Slots && (cards.Count >= slots.Length || slots[cards.Count] == null)) return false;
         if (card.CurrentZone != null) card.CurrentZone.RemoveView(card);
         cards.Add(card);
@@ -98,11 +109,12 @@ public abstract class CardPlacementZoneView : MonoBehaviour, IPointerEnterHandle
         if (card != null && card.CurrentZone == this) card.CurrentZone = null;
         RefreshPlacement();
     }
-    public Pose GetPlacementPose(int index)
+    public virtual Pose GetPlacementPose(int index)
     {
         if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
         Transform anchor = CardAnchor;
         Vector3 offset = layout == CardZoneLayout.Row ? rowOffset * index : stackOffset * index;
+        if (layout == CardZoneLayout.Stack) offset = new Vector3(0, 0, stackOffset.z * index);
         if (layout == CardZoneLayout.Slots)
         {
             if (index >= slots.Length || slots[index] == null) throw new InvalidOperationException("区域槽位未配置。");
@@ -118,7 +130,7 @@ public abstract class CardPlacementZoneView : MonoBehaviour, IPointerEnterHandle
         for (int i = 0; i < cards.Count; i++)
         {
             Pose pose = GetPlacementPose(i);
-            cards[i].transform.SetPositionAndRotation(pose.position, pose.rotation * cards[i].PlacementRotationOffset);
+            cards[i].MoveTo(pose.position, pose.rotation * cards[i].PlacementRotationOffset, Vector3.one);
         }
     }
 }

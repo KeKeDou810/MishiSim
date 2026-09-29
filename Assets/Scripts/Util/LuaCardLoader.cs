@@ -16,7 +16,7 @@ public static class LuaCardLoader
         bool isPlayer = type == "玩家卡";
         bool hasNoCombatStats = isPlayer || type == "决策卡";
 
-        return new CardDefinition(
+        var definition = new CardDefinition(
             ReadString(table, "id"),
             ReadString(table, "name"),
             ReadString(table, "faction"),
@@ -26,11 +26,15 @@ public static class LuaCardLoader
             type,
             hasNoCombatStats ? string.Empty : ReadString(table, "race"),
             ReadString(table, "artworkPath"),
-            ReadColor(table),
             ReadPlayerId(table, 1),
             ReadPlayerId(table, 2),
             ReadOptionalString(table, "effectText")
         );
+        definition.ScriptSource = source;
+        string clock = ReadOptionalString(table, "clock");
+        if (clock != "" && clock != "black" && clock != "white") throw new FormatException("clock must be black or white.");
+        definition.Clock = clock == "white" ? Mishi.Battle.ClockKind.White : Mishi.Battle.ClockKind.Black;
+        return new CardDefinition(definition, ReadOptionalString(table, "rulesId"), ReadOptionalString(table, "rarity"));
     }
 
     private static string ReadOptionalString(Table table, string field)
@@ -40,24 +44,6 @@ public static class LuaCardLoader
         if (value.Type != DataType.String)
             throw new FormatException($"卡片字段 '{field}' 必须是 string。");
         return value.String;
-    }
-
-    private static CardColor ReadColor(Table table)
-    {
-        DynValue value = table.Get("color");
-        if (value.Type == DataType.Nil) return CardColor.Unknown;
-        if (value.Type != DataType.String)
-            throw new FormatException("color 必须是 string。");
-        switch (value.String)
-        {
-            case "blue": case "蓝": return CardColor.Blue;
-            case "green": case "绿": return CardColor.Green;
-            case "red": case "红": return CardColor.Red;
-            case "white": case "白": return CardColor.White;
-            case "black": case "黑": return CardColor.Black;
-            case "generic": case "泛用": return CardColor.Generic;
-            default: throw new FormatException("color 必须是 blue/green/red/white/black/generic。");
-        }
     }
 
     private static string ReadPlayerId(Table table, int index)

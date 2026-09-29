@@ -1,0 +1,77 @@
+{
+  "Name": "掷骰与决策效果调用",
+  "Instructions": "使用手牌决策卡，选择发动雪乘诱发，观察中央掷骰动画；召唤中野零子后选择弃牌区决策卡，验证偶数支付后调用／奇数回牌库洗切。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Main",
+  "Cost": [
+    11,
+    11
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "White",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 0,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD04-005-C",
+      "Owner": 0,
+      "Zone": "Board",
+      "Node": 6
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Board",
+      "Node": 5
+    },
+    {
+      "Id": "PD04-008-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-014-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Hand",
+      "Count": 3
+    },
+    {
+      "Id": "PD01-014-C",
+      "Owner": 0,
+      "Zone": "Discard"
+    }
+  ]
+}

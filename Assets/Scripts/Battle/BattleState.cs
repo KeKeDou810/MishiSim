@@ -17,16 +17,18 @@ namespace Mishi.Battle
         public int Power { get; }
         public bool IsContract { get; }
         public int Level { get; }
+        public int AttackRange { get; }
         public bool IsExhausted { get; internal set; }
         public UnitZone Zone { get; internal set; }
 
         public BattleUnit(int instanceId, string definitionId, int controllerId, int nodeId,
-            int power, bool isContract = false, bool isExhausted = false, UnitZone zone = UnitZone.Board, int level = 0)
+            int power, bool isContract = false, bool isExhausted = false, UnitZone zone = UnitZone.Board, int level = 0, int attackRange = 1)
         {
             if (string.IsNullOrWhiteSpace(definitionId)) throw new ArgumentException("Missing definition ID.");
             InstanceId = instanceId; DefinitionId = definitionId; ControllerId = controllerId;
             NodeId = nodeId; Power = power; IsContract = isContract; IsExhausted = isExhausted; Zone = zone;
             Level = level;
+            AttackRange = attackRange;
         }
     }
 
@@ -35,6 +37,11 @@ namespace Mishi.Battle
     {
         private readonly HashSet<(int, int)> edges = new HashSet<(int, int)>();
         private readonly Dictionary<int, int> protectedOwners = new Dictionary<int, int>();
+        private readonly Dictionary<int, int> playerOwners = new Dictionary<int, int>();
+        public void SetPlayerNode(int nodeId, int ownerId)
+        { SetPlayerOrDefenseNode(nodeId, ownerId); playerOwners[nodeId] = ownerId; }
+        public int PlayerAt(int nodeId) => playerOwners.TryGetValue(nodeId, out int owner) ? owner : -1;
+        public bool IsProtectedBy(int nodeId, int player) => protectedOwners.TryGetValue(nodeId, out int owner) && owner == player;
         public void SetPlayerOrDefenseNode(int nodeId, int ownerId) => protectedOwners[nodeId] = ownerId;
         public bool IsOpposingProtectedNode(int nodeId, int playerId) =>
             protectedOwners.TryGetValue(nodeId, out int ownerId) && ownerId != playerId;
@@ -44,6 +51,23 @@ namespace Mishi.Battle
             edges.Add((a, b)); edges.Add((b, a));
         }
         public bool AreAdjacent(int a, int b) => edges.Contains((a, b));
+        public bool InRange(int from, int to, int range)
+        {
+            if (from == to || range < 1) return false;
+            var seen = new HashSet<int> { from }; var queue = new Queue<(int node, int distance)>(); queue.Enqueue((from, 0));
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (current.distance >= range) continue;
+                foreach (var edge in edges)
+                {
+                    if (edge.Item1 != current.node) continue;
+                    if (edge.Item2 == to) return true;
+                    if (seen.Add(edge.Item2)) queue.Enqueue((edge.Item2, current.distance + 1));
+                }
+            }
+            return false;
+        }
     }
 
     public sealed class PendingAttack
@@ -85,7 +109,7 @@ namespace Mishi.Battle
                     throw new ArgumentException("Two units occupy the same node.");
                 // Own a copy so fixtures or another match cannot mutate this state.
                 units.Add(unit.InstanceId, new BattleUnit(unit.InstanceId, unit.DefinitionId,
-                    unit.ControllerId, unit.NodeId, unit.Power, unit.IsContract, unit.IsExhausted, unit.Zone, unit.Level));
+                    unit.ControllerId, unit.NodeId, unit.Power, unit.IsContract, unit.IsExhausted, unit.Zone, unit.Level, unit.AttackRange));
             }
         }
         public BattleUnit GetUnit(int id) => units[id];
@@ -145,7 +169,7 @@ namespace Mishi.Battle
             if (attacker.ControllerId != playerId) return AttackError.NotControlled;
             if (target.ControllerId == playerId) return AttackError.FriendlyTarget;
             if (attacker.IsExhausted) return AttackError.Exhausted;
-            if (!board.AreAdjacent(attacker.NodeId, target.NodeId)) return AttackError.OutOfRange;
+            if (!board.InRange(attacker.NodeId, target.NodeId, attacker.AttackRange)) return AttackError.OutOfRange;
 
             attacker.IsExhausted = true;
             PendingAttack = new PendingAttack(attacker, target);

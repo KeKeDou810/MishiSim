@@ -6,6 +6,28 @@ public class CardVisual : MonoBehaviour
 {
     [SerializeField] private CardPreview _preview;
     [SerializeField] private Renderer _frontRenderer;
+    [SerializeField] private Renderer _backRenderer;
+    private CardDatabaseService sleeveService;
+    private MaterialPropertyBlock sleeveProperties;
+    private void Start()
+    {
+        if (_backRenderer == null) return;
+        sleeveService = CardDatabaseService.Instance;
+        sleeveService.SleeveChanged += ApplySleeve;
+        sleeveService.EnsureSleeveTexture();
+        ApplySleeve();
+    }
+    private void ApplySleeve()
+    {
+        if (_backRenderer == null || sleeveService == null || sleeveService.SleeveTexture == null) return;
+        sleeveProperties ??= new MaterialPropertyBlock();
+        _backRenderer.GetPropertyBlock(sleeveProperties);
+        sleeveProperties.SetTexture(BaseMap, sleeveService.SleeveTexture);
+        sleeveProperties.SetTexture("_MainTex", sleeveService.SleeveTexture);
+        sleeveProperties.SetColor("_BaseColor", Color.white);
+        sleeveProperties.SetColor("_Color", Color.white);
+        _backRenderer.SetPropertyBlock(sleeveProperties);
+    }
 
     private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
 
@@ -15,6 +37,7 @@ public class CardVisual : MonoBehaviour
 
     public void Bind(CardDefinition definition)
     {
+        if (_frontRenderer != null) _frontRenderer.enabled = true;
         var service = CardDatabaseService.Instance;
 
         string path = Path.Combine(
@@ -60,6 +83,7 @@ public class CardVisual : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (sleeveService != null) sleeveService.SleeveChanged -= ApplySleeve;
         if (_artworkTexture != null)
             Destroy(_artworkTexture);
     }

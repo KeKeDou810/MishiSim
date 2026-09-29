@@ -1,0 +1,61 @@
+{
+  "Name": "未来视与特效标记",
+  "Instructions": "契约已放在相连圆阵6与5。进入战斗后攻击对方，手动切换P1/P2处理响应，再进行未来视，观察顶牌特效、展示和记录。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Combat",
+  "Cost": [
+    4,
+    4
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "White",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 0,
+      "Zone": "Board",
+      "Node": 6
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board",
+      "Node": 5
+    },
+    {
+      "Id": "PD01-014-C",
+      "Owner": 0,
+      "Zone": "Deck"
+    },
+    {
+      "Id": "PD01-013-C",
+      "Owner": 0,
+      "Zone": "Deck"
+    },
+    {
+      "Id": "PD01-012-C",
+      "Owner": 0,
+      "Zone": "Deck"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    }
+  ]
+}

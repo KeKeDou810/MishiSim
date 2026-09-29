@@ -150,11 +150,11 @@ public sealed class NetworkTestMatchTests
         Phase(TestTurnPhase.Main); var id = Hand(0); Assert.IsTrue(Act(TestCommandKind.Summon, id, 4));
         Assert.IsFalse(Act(TestCommandKind.Summon, id, 5)); Assert.AreEqual(4, Card(id).NodeId);
     }
-    [Test] public void OverclockValidationIsTypedAndReservedCommandIsNonMutating()
+    [Test] public void EqualTimeOverclockIsRejectedWithoutMutation()
     {
         Phase(TestTurnPhase.Main); var hand = Hand(0); var target = Contract(0); int revision = match.Revision;
-        Assert.IsTrue(match.ValidateOverclock(0, hand, 0, out var request, out _));
-        Assert.AreEqual(hand, request.SourceCardId); Assert.AreEqual(target, request.TargetCardId); Assert.AreEqual(match.MatchId, request.MatchId);
+        Assert.IsFalse(match.ValidateOverclock(0, hand, 0, out var request, out _));
+        Assert.IsNull(request);
         Assert.IsFalse(Act(TestCommandKind.Overclock, hand, 0)); Assert.AreEqual(revision, match.Revision);
         Assert.AreEqual(4, match.ForPlayer(0).OwnHand.Length); Assert.AreEqual(2, match.ForPlayer(0).Board.Length);
         Assert.IsFalse(match.ValidateOverclock(0, hand, 2, out _, out _));

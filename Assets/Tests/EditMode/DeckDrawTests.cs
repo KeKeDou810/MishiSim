@@ -53,7 +53,8 @@ public sealed class DeckDrawTests
         match.DealOpeningHands(); Assert.AreEqual(1, match.ForPlayer(0).OwnHand.Length);
         Assert.IsTrue(Next()); Assert.AreEqual(2, match.ForPlayer(0).OwnHand.Length);
         Assert.AreEqual(0, match.ForPlayer(0).DeckCounts[0]);
-        Assert.IsTrue(match.ForPlayer(0).LastAction.Contains("Deck empty"));
+        Assert.AreEqual(6, match.ForPlayer(0).DamagePointers[0]);
+        Assert.AreEqual(6, match.ForPlayer(0).CostPointers[0]);
         while (match.Phase != TestTurnPhase.Main) Assert.IsTrue(Next());
         Assert.IsFalse(match.TryCommand(0, match.MatchId, ++sequence, match.Revision, TestCommandKind.Summon, match.ForPlayer(0).OwnHand[0].Id, 2, out _));
         Assert.IsFalse(match.ValidateOverclock(0, match.ForPlayer(0).OwnHand[0].Id, 0, out _, out _));

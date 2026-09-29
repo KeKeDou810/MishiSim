@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
-public sealed class CardDatabaseService : MonoBehaviour
+public sealed partial class CardDatabaseService : MonoBehaviour
 {
     private static CardDatabaseService instance;
     public static CardDatabaseService Instance
@@ -39,6 +39,30 @@ public sealed class CardDatabaseService : MonoBehaviour
     public DeckModel SelectedDeck { get; private set; } = new DeckModel();
     public IReadOnlyList<GameMode> Modes { get; private set; } = Array.Empty<GameMode>();
     public GameMode ActiveMode => SelectedDeck.Mode;
+    private readonly Dictionary<string, string> deckNames = new Dictionary<string, string>();
+    public string SelectedDeckName => ActiveMode.Id != null && deckNames.TryGetValue(ActiveMode.Id, out var name) ? name : "未保存卡组";
+    public string DeckDirectory => Path.Combine(ContentRoot, "Decks");
+    public string[] SavedDeckNames() => DeckStorage.List(DeckDirectory);
+    public void SaveDeck(string name)
+    {
+        EnsureLoaded();
+        if (IsBattleActive) throw new InvalidOperationException("战斗期间不能保存卡组。");
+        DeckStorage.Save(DeckDirectory, name, SelectedDeck);
+        deckNames[ActiveMode.Id] = name;
+    }
+    public void LoadDeck(string name)
+    {
+        EnsureLoaded();
+        if (IsBattleActive) throw new InvalidOperationException("战斗期间不能读取卡组。");
+        var data = DeckStorage.Read(DeckDirectory, name);
+        var mode = Modes.SingleOrDefault(m => m.Id == data.ModeId) ?? throw new InvalidDataException("存档使用的游戏模式不存在。");
+        var empty = new DeckModel(mode);
+        empty.LoadLimits(Path.Combine(ContentRoot, "Rules", "banlist.json"));
+        var next = DeckStorage.Validate(data, empty, database.Get);
+        modeDecks[mode.Id] = SelectedDeck = next;
+        deckNames[mode.Id] = name;
+        Notify(DeckChanged);
+    }
     private readonly Dictionary<string, DeckModel> modeDecks = new Dictionary<string, DeckModel>();
     public void SelectMode(string id)
     {
@@ -52,7 +76,7 @@ public sealed class CardDatabaseService : MonoBehaviour
             modeDecks.Add(id, deck);
         }
         SelectedDeck = deck;
-        Notify(DatabaseReloaded); Notify(DeckChanged);
+        Notify(DeckChanged);
     }
     public DeckModel ValidateDeck(IEnumerable<string> ids)
     {
@@ -71,6 +95,7 @@ public sealed class CardDatabaseService : MonoBehaviour
         var example = ActiveMode.ExampleDeck ?? throw new InvalidOperationException("此模式没有 exampleDeck。");
         var deck = ValidateDeck(example.SelectMany(e => Enumerable.Repeat(e.Key, e.Value)));
         modeDecks[ActiveMode.Id] = SelectedDeck = deck;
+        deckNames.Remove(ActiveMode.Id);
         Notify(DeckChanged);
     }
     public IEnumerable<CardDefinition> AllCards => database.All;
@@ -173,6 +198,7 @@ public sealed class CardDatabaseService : MonoBehaviour
         }
         catch (Exception e) { ReportError($"重新加载失败，保留上次数据：{e.Message}"); return false; }
         Notify(DatabaseReloaded);
+        EnsureSleeveTexture(true);
         return true;
     }
     private string GetDatabaseSignature()
@@ -204,6 +230,6 @@ public sealed class CardDatabaseService : MonoBehaviour
         foreach (Action subscriber in handlers.GetInvocationList())
             try { subscriber(); } catch (Exception e) { Debug.LogException(e); }
     }
-    private void OnDestroy() { if (instance == this) instance = null; }
+    private void OnDestroy() { DisposeSleeve(); if (instance == this) instance = null; }
 }
 

@@ -48,8 +48,17 @@ public sealed class CardDatabase
             }
         }
 
+        var groups = new Dictionary<string, CardDefinition>(StringComparer.Ordinal);
         foreach (CardDefinition card in loaded.Values)
         {
+            // Any member can validate the shared rules; no printing is a required base version.
+            if (!groups.TryGetValue(card.RulesId, out var peer))
+                groups.Add(card.RulesId, peer = card);
+            if (card.Clock != peer.Clock || card.Name != peer.Name || card.Type != peer.Type || card.Faction != peer.Faction ||
+                card.Level != peer.Level || card.Power != peer.Power ||
+                card.Sign != peer.Sign || card.Race != peer.Race || card.EffectText != peer.EffectText ||
+                card.PlayerCardId1 != peer.PlayerCardId1 || card.PlayerCardId2 != peer.PlayerCardId2)
+                throw new InvalidDataException($"同卡组 {card.RulesId} 的版本 {card.Id} 与 {peer.Id} 规则字段不一致。");
             if (!card.IsContract) continue;
             foreach (string playerId in new[] { card.PlayerCardId1, card.PlayerCardId2 })
             {

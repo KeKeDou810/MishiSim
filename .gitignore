@@ -201,3 +201,11 @@ x86/
 *.vsix
 .codex-remote-attachments
 .vscode
+
+# Embedded Steamworks.NET native runtime must travel with the project.
+!Packages/com.rlabrecque.steamworks.net/Plugins/**/*.dll
+!Packages/com.rlabrecque.steamworks.net/Plugins/**/*.so
+!Packages/com.rlabrecque.steamworks.net/Plugins/**/*.dylib
+
+!Packages/com.rlabrecque.steamworks.net/
+!Packages/com.rlabrecque.steamworks.net/**

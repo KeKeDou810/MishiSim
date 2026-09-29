@@ -1,0 +1,49 @@
+{
+  "Name": "玩家附着与距离",
+  "Instructions": "发动契约支付1，观察玩家附着、移动时随行；使用决策卡破坏契约，观察玩家返回并翻面抽一。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Main",
+  "Cost": [
+    4,
+    4
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "Black",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "HZ01-020-R",
+      "Owner": 0,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-014-C",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    }
+  ]
+}

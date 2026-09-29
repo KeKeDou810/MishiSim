@@ -1,0 +1,62 @@
+{
+  "Name": "符文叠加与来源离场",
+  "Instructions": "使用天使的符文，选择场外区，检查场上天使+300和回合切换。注意：乌列尔的起动效果目前尚未配置。",
+  "Seed": 17,
+  "ActivePlayer": 0,
+  "Turn": 2,
+  "Phase": "Main",
+  "Cost": [
+    4,
+    4
+  ],
+  "Damage": [
+    4,
+    4
+  ],
+  "Clocks": [
+    "Black",
+    "White"
+  ],
+  "Cards": [
+    {
+      "Id": "HZ01-028-R",
+      "Owner": 0,
+      "Zone": "Board"
+    },
+    {
+      "Id": "PD01-001-USR",
+      "Owner": 1,
+      "Zone": "Board"
+    },
+    {
+      "Id": "HZ01-030-R",
+      "Owner": 0,
+      "Zone": "Hand"
+    },
+    {
+      "Id": "HZ01-030-R",
+      "Owner": 0,
+      "Zone": "OffField",
+      "Node": 0,
+      "StackOrder": 0
+    },
+    {
+      "Id": "HZ01-013-SR",
+      "Owner": 0,
+      "Zone": "Board",
+      "Node": 6
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 0,
+      "Zone": "Deck",
+      "Count": 15
+    },
+    {
+      "Id": "PD01-004-C",
+      "Owner": 1,
+      "Zone": "Deck",
+      "Count": 15
+    }
+  ]
+}
