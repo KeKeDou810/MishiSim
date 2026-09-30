@@ -50,6 +50,15 @@ public sealed partial class CardDatabaseService : MonoBehaviour
         DeckStorage.Save(DeckDirectory, name, SelectedDeck);
         deckNames[ActiveMode.Id] = name;
     }
+    public void NewDeck()
+    {
+        EnsureLoaded();
+        if (IsBattleActive) throw new InvalidOperationException("战斗期间不能新建卡组。");
+        var next = SelectedDeck.EmptyCopy();
+        modeDecks[ActiveMode.Id] = SelectedDeck = next;
+        deckNames.Remove(ActiveMode.Id);
+        Notify(DeckChanged);
+    }
     public void LoadDeck(string name)
     {
         EnsureLoaded();

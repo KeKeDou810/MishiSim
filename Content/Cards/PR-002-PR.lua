@@ -12,6 +12,31 @@ return{
     race = "矿龙",
     artworkPath = "Artwork/PR-002-PR.png",
     effects = {
+        onSummon = function(ctx)
+            return {
+                {
+                    op = "Scry",
+                    amount = 5,
+                    storeAs = "viewed",
+                    after = {
+                        {
+                            op = "Choose",
+                            target = "set",
+                            set = "viewed",
+                            types = { "通常时魔", "契约时魔" },
+                            minTime = 4,
+                            minCount = 0,
+                            maxCount = 1,
+                            storeAs = "picked",
+                            prompt = "挖矿滚地龙：可选一张时间4及以上的时魔加入手牌"
+                        },
+                        { op = "Reveal", target = "set", set = "picked" },
+                        { op = "Move", target = "set", set = "picked", zone = "Hand" },
+                        { op = "Move", target = "set", set = "viewed", except = "picked", zone = "Discard" }
+                    }
+                }
+            }
+        end,
         onForesight = function(ctx)
             return {
                 { op = "Choose", zone = "Board", side = "any", prompt = "挖矿滚地龙：选择一个时魔保护" },

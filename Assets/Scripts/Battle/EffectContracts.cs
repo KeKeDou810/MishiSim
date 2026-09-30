@@ -92,6 +92,7 @@ namespace Mishi.Battle
         public string DefinitionId, Name, Type, Race, Sign, InstanceId;
         public TestCardZone Zone;
         public int Node, ZoneEnteredTurn, LastRebuiltTurn;
+        public int LastEffectRebuiltTurn = -1;
         public int Owner, Power, Time;
     }
     public interface ICardNameProvider

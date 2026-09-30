@@ -50,7 +50,8 @@ return{
                         {
                             op = "Continue",
                             callback = "afterPick"
-                        }
+                        },
+                        { op = "ReturnToDeck", target = "set", set = "viewed", except = "picked", position = "bottom" }
                     },
                     from = "bottom"
                 }

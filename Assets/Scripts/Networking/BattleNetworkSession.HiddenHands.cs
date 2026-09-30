@@ -73,7 +73,7 @@ namespace Mishi.Networking
             foreach (var card in opponentHandBacks) if (card != null) Destroy(card.gameObject);
             foreach (var card in spectatorHandBacks) if (card != null) Destroy(card.gameObject);
             opponentHandBacks.Clear(); spectatorHandBacks.Clear();
-            playerHud?.SetOpponentHandHovered(false);
+            if (playerHud != null) playerHud.SetOpponentHandHovered(false);
         }
     }
 }

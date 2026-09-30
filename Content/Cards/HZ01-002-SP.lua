@@ -26,14 +26,15 @@ return{
                             set = "viewed",
                             minCount = 0,
                             storeAs = "picked",
-                            prompt = "加入手牌？不选择则留在卡组底"
+                            prompt = "加入手牌？不选择则放置到卡组底"
                         },
                         {
                             op = "Move",
                             target = "set",
                             zone = "Hand",
                             set = "picked"
-                        }
+                        },
+                        { op = "ReturnToDeck", target = "set", set = "viewed", except = "picked", position = "bottom" }
                     },
                     from = "bottom"
                 }

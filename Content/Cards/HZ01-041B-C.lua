@@ -49,7 +49,7 @@ return{
                     local a = ctx.event.attacker
                     if not a or not a.name:find("轩辕", 1, true) or ctx.opponentClock ~= "white" then return false end
                     for _, card in ipairs(ctx.publicCards) do
-                        if card.instanceId == a.instanceId then return card.lastRebuiltTurn == ctx.turn end
+                        if card.instanceId == a.instanceId then return card.lastEffectRebuiltTurn == ctx.turn end
                     end
                     return false
                 end

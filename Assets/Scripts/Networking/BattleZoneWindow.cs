@@ -37,7 +37,7 @@ namespace Mishi.Networking
         public event Action PaymentCancelled;
         private bool choosingNumber, choosingPaymentCards;
         private int numberMinimum, numberMaximum, chosenNumber;
-        private bool foresightOffer;
+        private bool foresightOffer, choosingMark;
         private bool declaringName;
         private string declarationPrompt;
         private NetworkCardInfo[] declarationCards = Array.Empty<NetworkCardInfo>();
@@ -85,7 +85,7 @@ namespace Mishi.Networking
             close.GetComponentInChildren<TMP_Text>(true).text = "关闭";
             choosingTriggers = false;
             choosingNumber = choosingPaymentCards = false;
-            foresightOffer = false;
+            foresightOffer = choosingMark = false;
             declaringName = false; declarationSearch.gameObject.SetActive(false);
             choosingScry = false; selectedScry = null; shownDatabase = database;
             ApplyLayout(false);
@@ -210,6 +210,14 @@ namespace Mishi.Networking
             scryTop.interactable = scryBottom.interactable = false; scryConfirm.interactable = true;
             scryConfirm.GetComponentInChildren<TMP_Text>().text = fixedDestination == 1 ? "确认放回卡顶" : fixedDestination == 2 ? "确认放回卡底" : "确认";
             pageLabel.text = chooseDestination ? "先选一张卡，再选择卡顶或卡底；各组按点击顺序排列" : "查看完成后确认";
+            choosingMark = destinations.Contains(3);
+            if (choosingMark)
+            {
+                scryTop.interactable = scryBottom.interactable = true;
+                scryTop.GetComponentInChildren<TMP_Text>().text = "发动印记";
+                scryBottom.GetComponentInChildren<TMP_Text>().text = "不发动";
+                pageLabel.text = "选择是否发动翻到的印记 · 超时默认不发动";
+            }
         }
         public void ShowForesightOffer(string prompt, NetworkCardInfo[] attacker, BattleCardSnapshot database)
         {
@@ -229,6 +237,12 @@ namespace Mishi.Networking
         }
         private void ResolveDeckView(int destination)
         {
+            if (choosingMark)
+            {
+                if (!scryTop.interactable) return;
+                scryTop.interactable = scryBottom.interactable = false;
+                DeckViewResolved?.Invoke(null, destination == 1 ? 0 : 3); return;
+            }
             if (browsingExile) { SelectExile(destination == 1 ? exileViewer : 1 - exileViewer); return; }
             if (choosingNumber)
             {
@@ -289,7 +303,7 @@ namespace Mishi.Networking
         public void Hide()
         {
             browsingExile = false; exileCards = Array.Empty<NetworkCardInfo>();
-            foresightOffer = false;
+            foresightOffer = choosingMark = false;
             declaringName = false; selectedName = -1;
             declarationSearch.gameObject.SetActive(false);
             choosingScry = false; selectedScry = null;

@@ -84,7 +84,7 @@ namespace Mishi.Battle
             public override void Shuffle(int player) => match.ShuffleDeck(player);
             public override void Reveal(Card card) => match.Present(card, CardPresentationKind.Reveal);
             public override void ModifyRevealTime(int amount) => match.revealTimeAdjustments.Add((Source.Owner, Turn, amount));
-            public override void Ready(Card card) { card.Tapped = false; card.LastRebuiltTurn = Turn; }
+            public override void Ready(Card card) { card.Tapped = false; card.LastRebuiltTurn = card.LastEffectRebuiltTurn = Turn; }
             public override void SuppressEffects(Card card) { card.SuppressedUntilTurn = Turn; }
             public override void ProtectFromEnemyUnitEffects(Card card)
             { card.ProtectedAgainstPlayer = 1 - Source.Owner; card.ProtectedUntilTurn = Turn + (match.ActivePlayer == Source.Owner ? 1 : 2); }

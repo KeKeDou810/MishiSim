@@ -55,7 +55,7 @@ namespace Mishi.Battle
         private void ResolveDeckView(Guid id, int position)
         {
             var execution = executions.Peek();
-            if (execution.Scry != null) FinishScry(execution);
+            if (execution.Scry != null) { execution.Scry.ActivateMark = position != 3; FinishScry(execution); }
             else
             {
                 var state = execution.DeckReturn;
@@ -80,7 +80,7 @@ namespace Mishi.Battle
         private void ResolveDeckViewTimeout()
         {
             var execution = executions.Peek();
-            if (execution.Scry != null) FinishScry(execution);
+            if (execution.Scry != null) { execution.Scry.ActivateMark = execution.Foresight == null; FinishScry(execution); }
             else
             {
                 // One timer covers all choices. Preserve committed groups and append the remaining targets on top.

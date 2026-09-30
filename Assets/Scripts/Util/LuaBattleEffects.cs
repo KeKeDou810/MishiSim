@@ -186,6 +186,7 @@ public sealed partial class LuaBattleEffects : ICardEffectProvider, IScryEffectP
             var card = cards[i]; var item = new Table(script);
             item.Set("instanceId", DynValue.NewString(card.InstanceId ?? "")); item.Set("zone", DynValue.NewString(card.Zone.ToString())); item.Set("node", DynValue.NewNumber(card.Node));
             item.Set("lastRebuiltTurn", DynValue.NewNumber(card.LastRebuiltTurn));
+            item.Set("lastEffectRebuiltTurn", DynValue.NewNumber(card.LastEffectRebuiltTurn));
             item.Set("zoneEnteredTurn", DynValue.NewNumber(card.ZoneEnteredTurn));
             item.Set("id", DynValue.NewString(card.DefinitionId)); item.Set("name", DynValue.NewString(card.Name ?? ""));
             item.Set("type", DynValue.NewString(card.Type ?? "")); item.Set("race", DynValue.NewString(card.Race ?? ""));

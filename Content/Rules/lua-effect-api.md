@@ -745,5 +745,5 @@ continuous = function(ctx)
 end
 ```
 
-`CardMoved` 的 `ctx.event.position == "bottom"` 可识别从卡底移动出来的卡；普通抽卡不提供此标记。`Discarded` 的 `reason == "payment"` 表示支付费用弃牌。集合卡片的 `lastRebuiltTurn` 可与 `ctx.turn` 比较，判断本回合是否重构。
+`CardMoved` 的 `ctx.event.position == "bottom"` 可识别从卡底移动出来的卡；普通抽卡不提供此标记。`Discarded` 的 `reason == "payment"` 表示支付费用弃牌。集合卡片的 `lastRebuiltTurn` 可与 `ctx.turn` 比较，判断本回合是否重构。`lastEffectRebuiltTurn` 只记录效果造成的重构，不包含回合重构阶段；判断“本回合被效果重构过”时使用 `card.lastEffectRebuiltTurn == ctx.turn`。两项记录都会在离场后清除。
 

@@ -29,7 +29,7 @@ return{
                         {
                             op = "PreventDestruction",
                             target = "defender",
-                            from = "battle",
+                            from = "any",
                             duration = "battle"
                         }
                     }

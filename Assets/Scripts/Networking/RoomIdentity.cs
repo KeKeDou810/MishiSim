@@ -8,7 +8,7 @@ namespace Mishi.Networking
     {
         // Project namespace, not a password. Never share this identifier with another game.
         public const string Game = "mishi.sim.9e0e8a31-7c62-42d5-a173-a6cb80791f24";
-        public const int Protocol = 27;
+        public const int Protocol = 28;
         public const ushort SteamPort = 27341;
         public const uint AppId = 480;
         public const int ReconnectSeconds = 90;

@@ -28,6 +28,7 @@ namespace Mishi.Battle
             public bool IsToken { get; internal set; }
             internal int FieldGeneration;
             public int SuppressedUntilTurn { get; internal set; } = -1;
+            internal int LastEffectRebuiltTurn = -1;
             internal int LastRebuiltTurn = -1, ProtectedUntilTurn = -1, ProtectedAgainstPlayer = -1;
             internal readonly List<ContinuousContribution> ContinuousContributions = new List<ContinuousContribution>();
             internal readonly EffectVariableStore Variables = new EffectVariableStore();
@@ -43,7 +44,7 @@ namespace Mishi.Battle
                 bool contract = false, TestCardZone zone = TestCardZone.Board, bool decision = false, int time = 0)
             { Id = id; DefinitionId = definitionId; OriginalOwner = Owner = owner; NodeId = nodeId; BasePower = Power = power; IsContract = contract; Zone = zone; IsDecision = decision; BaseTime = Time = time >= 0 ? time : throw new ArgumentOutOfRangeException(nameof(time)); }
             internal Card Copy() => new Card(Id, DefinitionId, Owner, NodeId, Power, IsContract, Zone, IsDecision, Time)
-                { OriginalOwner = OriginalOwner, HiddenAttachment = HiddenAttachment, ZoneEnteredTurn = ZoneEnteredTurn, Tapped = Tapped, StackOrder = StackOrder, Covered = Covered, AttachedTo = AttachedTo, AttackRange = AttackRange, IsToken = IsToken, SuppressedUntilTurn = SuppressedUntilTurn, LastRebuiltTurn = LastRebuiltTurn, ProtectedUntilTurn = ProtectedUntilTurn, ProtectedAgainstPlayer = ProtectedAgainstPlayer };
+                { OriginalOwner = OriginalOwner, HiddenAttachment = HiddenAttachment, ZoneEnteredTurn = ZoneEnteredTurn, Tapped = Tapped, StackOrder = StackOrder, Covered = Covered, AttachedTo = AttachedTo, AttackRange = AttackRange, IsToken = IsToken, SuppressedUntilTurn = SuppressedUntilTurn, LastRebuiltTurn = LastRebuiltTurn, LastEffectRebuiltTurn = LastEffectRebuiltTurn, ProtectedUntilTurn = ProtectedUntilTurn, ProtectedAgainstPlayer = ProtectedAgainstPlayer };
         }
         public sealed class View
         {

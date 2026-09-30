@@ -3,6 +3,7 @@ using Mishi.Battle;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace Mishi.Networking
 {
@@ -10,9 +11,12 @@ namespace Mishi.Networking
     public sealed class BattlePlayerHud : MonoBehaviour
     {
         [SerializeField] private TMP_Text phase, notice, recording;
+        [SerializeField] private TMP_Text replayPosition;
         [SerializeField] private TMP_Text opponentHandCount, spectatorHandCount;
         [SerializeField] private Button nextPhase, occupy, stay, leave;
         [SerializeField] private GameObject replayControls;
+        [SerializeField] private Button recordingMenuButton;
+        [SerializeField] private GameObject recordingMenu;
         [SerializeField] private Button play, previousFrame, nextFrame, back, forward, speed, restart;
         public event Action NextPhaseRequested, OccupyRequested, StayRequested, LeaveRequested;
         public event Action PlayRequested, PreviousFrameRequested, NextFrameRequested, BackRequested, ForwardRequested, SpeedRequested, RestartRequested;
@@ -33,10 +37,13 @@ namespace Mishi.Networking
         public void SetOpponentHandHovered(bool hovered)
         {
             opponentHandHovered = hovered;
-            opponentHandCount.gameObject.SetActive(hovered);
+            if (opponentHandCount != null) opponentHandCount.gameObject.SetActive(hovered);
         }
         private void Awake()
         {
+            recordingMenu.SetActive(false);
+            recordingMenuButton.gameObject.SetActive(false);
+            recordingMenuButton.onClick.AddListener(() => recordingMenu.SetActive(!recordingMenu.activeSelf));
             replayButtons = new[] { play, previousFrame, nextFrame, back, forward, speed, restart };
             playLabel = play.GetComponentInChildren<TMP_Text>(); speedLabel = speed.GetComponentInChildren<TMP_Text>();
             nextPhaseLabel = nextPhase.GetComponentInChildren<TMP_Text>();
@@ -55,6 +62,18 @@ namespace Mishi.Networking
             nextPhase.interactable = false;
             opponentHandCount.gameObject.SetActive(false);
         }
+        private void Update()
+        {
+            if (!recordingMenu.activeSelf) return;
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+                recordingMenu.SetActive(false);
+            var mouse = Mouse.current;
+            if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
+            var point = mouse.position.ReadValue();
+            if (!RectTransformUtility.RectangleContainsScreenPoint((RectTransform)recordingMenu.transform, point, null) &&
+                !RectTransformUtility.RectangleContainsScreenPoint((RectTransform)recordingMenuButton.transform, point, null))
+                recordingMenu.SetActive(false);
+        }
         public static bool CanAdvance(NetworkSnapshot state, bool blocked)
         {
             return !blocked && !state.Spectator && state.Winner < 0 && state.ActivePlayer == state.You &&
@@ -67,12 +86,15 @@ namespace Mishi.Networking
             notice.text = message ?? ""; recording.text = recordingMessage ?? "";
             leave.interactable = canLeave;
             replayControls.SetActive(replay);
+            recordingMenuButton.gameObject.SetActive(replay);
+            recording.gameObject.SetActive(!replay);
+            if (!replay) recordingMenu.SetActive(false);
             foreach (var button in replayButtons) button.interactable = !blocked;
             if (replay)
             {
                 playLabel.text = playing ? "暂停" : "播放";
                 speedLabel.text = rate + "×";
-                recording.text = $"录像  {position:0.0} / {duration:0.0} 秒";
+                replayPosition.text = $"录像  {position:0.0} / {duration:0.0} 秒";
             }
             bool occupation = snapshot.HasValue && !snapshot.Value.Spectator && snapshot.Value.Winner < 0 &&
                 snapshot.Value.ActivePlayer == snapshot.Value.You && snapshot.Value.OccupationNode >= 0;

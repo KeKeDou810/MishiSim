@@ -141,7 +141,7 @@ namespace Mishi.Battle
         {
             activationCounts.RemoveWhere(key => key.EndsWith(":instance:" + source.Id, StringComparison.Ordinal));
             source.FieldGeneration++;
-            source.SuppressedUntilTurn = source.LastRebuiltTurn = source.ProtectedUntilTurn = source.ProtectedAgainstPlayer = -1;
+            source.SuppressedUntilTurn = source.LastRebuiltTurn = source.LastEffectRebuiltTurn = source.ProtectedUntilTurn = source.ProtectedAgainstPlayer = -1;
             foreach (var target in cards) target.Modifiers.RemoveAll(m => m.SourceBound && m.Source == source.Id);
             source.Modifiers.Clear();
             source.Variables.ClearAll();

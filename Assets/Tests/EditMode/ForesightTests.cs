@@ -14,6 +14,26 @@ public sealed partial class EffectKernelTests
         Phase(TestTurnPhase.Combat);
     }
     private void StartForesightAttack() => Assert.IsTrue(Act(TestCommandKind.Attack, Contract(), 1));
+    [TestCase(false)] [TestCase(true)]
+    public void RevealedMarkCanBeDeclinedWithoutSkippingNextForesight(bool timeout)
+    {
+        ForesightSetup(2, ForesightMark.Heal);
+        match.ResolvePlayerDamage(0, 1, moveCost: true);
+        int revealedEvents = 0, resolvedEvents = 0;
+        Listen("contract", new EventSubscription { Id = "reveal", Event = "ForesightRevealed", Subject = "self" },
+            new EventSubscription { Id = "mark", Event = "ForesightResolved" });
+        provider.ListenerPlan = (c, key) => { if (key == "reveal") revealedEvents++; else resolvedEvents++; return Array.Empty<EffectInstruction>(); };
+        StartForesightAttack(); Assert.IsTrue(Act(TestCommandKind.ChooseForesight, node: 1));
+        var revealed = match.ForPlayer(0).Choice.ViewedCards.Single().Id;
+        Assert.Contains(3, match.ForPlayer(0).Choice.DeckPositions);
+        Assert.IsFalse(Act(TestCommandKind.ResolveDeckView, node: 3, player: 1));
+        if (timeout) Assert.IsTrue(match.AdvanceTime(21));
+        else Assert.IsTrue(Act(TestCommandKind.ResolveDeckView, node: 3));
+        Assert.AreEqual(5, match.ForPlayer(0).DamagePointers[0]);
+        Assert.IsTrue(match.ForPlayer(0).PublicPiles.Any(c => c.Id == revealed && c.Zone == TestCardZone.Discard));
+        Assert.IsTrue(match.ForPlayer(0).Choice.IsForesightOffer);
+        Assert.AreEqual(1, revealedEvents); Assert.AreEqual(0, resolvedEvents);
+    }
     [Test] public void EachForesightCanTriggerDespiteUnrelatedCardActivationLimit()
     {
         ForesightSetup(2); int count = 0;

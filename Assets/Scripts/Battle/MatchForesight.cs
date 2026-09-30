@@ -96,12 +96,17 @@ namespace Mishi.Battle
                 default: return Array.Empty<EffectInstruction>();
             }
         }
-        private void FinishForesightScry(EffectExecution execution, Card[] viewed)
+        private void FinishForesightScry(EffectExecution execution, Card[] viewed, bool activateMark)
         {
             if (viewed.Length == 0) return;
             var card = viewed[0]; var combat = execution.Foresight;
             combat.Revealed = card;
             Publish(new Events.ForesightRevealedEvent(EventCard(combat.Attacker, true), EventCard(card, true)));
+            if (!activateMark)
+            {
+                AddLog(card.Owner, "不发动特效标记：" + CardLabel(card));
+                return;
+            }
             execution.Source = card;
             var plan = ForesightPlan(execution, card);
             execution.ResolvedMark = BindScript(plan, card.DefinitionId);

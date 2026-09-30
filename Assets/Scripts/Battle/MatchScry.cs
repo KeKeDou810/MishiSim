@@ -11,6 +11,7 @@ namespace Mishi.Battle
         {
             public EffectInstruction Instruction;
             public Card[] Viewed;
+            public bool ActivateMark = true;
         }
         private void BeginScry(EffectExecution execution, EffectInstruction step)
         {
@@ -35,7 +36,7 @@ namespace Mishi.Battle
             effectChoice = new EffectChoice {
                 Player = execution.Source.Owner, IsDeckView = true, PublicView = execution.Foresight != null && step.Reveal, Prompt = step.Prompt ?? "查看牌库",
                 Candidates = viewed.Select(c => c.Id).ToArray(), ViewedCards = viewed.Select(c => c.Copy()).ToArray(),
-                DeckPositions = new[] { 0 },
+                DeckPositions = execution.Foresight != null && effects.Rules(viewed[0].DefinitionId).ForesightMark != ForesightMark.None ? new[] { 0, 3 } : new[] { 0 },
                 Seconds = drawRules?.ResponseTimeSeconds > 0 ? drawRules.ResponseTimeSeconds : 20
             };
         }
@@ -48,7 +49,7 @@ namespace Mishi.Battle
         {
             var scry = execution.Scry;
             effectChoice = null; execution.Scry = null;
-            if (execution.Foresight != null) { FinishForesightScry(execution, scry.Viewed); return; }
+            if (execution.Foresight != null) { FinishForesightScry(execution, scry.Viewed, scry.ActivateMark); return; }
             var after = scry.Instruction.After;
             if (!string.IsNullOrEmpty(scry.Instruction.AfterCallback))
             {

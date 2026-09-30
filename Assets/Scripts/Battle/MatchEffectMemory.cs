@@ -54,7 +54,7 @@ namespace Mishi.Battle
         private ScryCardInfo MemoryCard(Card card)
         {
             var rule = effects.Rules(card.DefinitionId);
-            return new ScryCardInfo { InstanceId = card.Id.ToString("N"), Zone = card.Zone, Node = card.NodeId, ZoneEnteredTurn = card.ZoneEnteredTurn, LastRebuiltTurn = card.LastRebuiltTurn, DefinitionId = card.DefinitionId, Owner = card.Owner, Name = rule.Name,
+            return new ScryCardInfo { InstanceId = card.Id.ToString("N"), Zone = card.Zone, Node = card.NodeId, ZoneEnteredTurn = card.ZoneEnteredTurn, LastRebuiltTurn = card.LastRebuiltTurn, LastEffectRebuiltTurn = card.LastEffectRebuiltTurn, DefinitionId = card.DefinitionId, Owner = card.Owner, Name = rule.Name,
                 Type = rule.Type, Race = rule.Race, Sign = rule.Sign, Power = card.Power, Time = card.Time };
         }
         private void PopulateEffectMemory(EffectExecution execution, EffectContext context)

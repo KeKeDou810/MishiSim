@@ -1,6 +1,6 @@
 local function hasPublic(ctx, zone, name)
     for _, card in ipairs(ctx.publicCards) do
-        if card.owner == ctx.owner and card.zone == zone and string.find(card.name, name, 1, true) then return true end
+        if card.owner == ctx.owner and card.zone == zone and card.type == "衍生物" and card.name == name then return true end
     end
     return false
 end
@@ -59,7 +59,7 @@ return{
             }
         },
         egg = function(ctx)
-            if hasPublic(ctx, "OffField", "龙蛋") or hasPublic(ctx, "Board", "龙蛋") then
+            if hasPublic(ctx, "OffField", "龙蛋衍生物") or hasPublic(ctx, "Board", "龙蛋衍生物") then
                 return {
                 {
                     op = "QueryCards",

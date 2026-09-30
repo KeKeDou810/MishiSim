@@ -32,6 +32,13 @@ namespace Mishi.Networking
         {
             EnsureMenu(); instance.BindView(view);
         }
+        private System.Collections.IEnumerator OpenRecordingSelector(RoomFlowView view)
+        {
+            // TMP initializes its dropdown tween runner in Start after first activation.
+            yield return null;
+            if (view != null && view.recordings != null && view.recordings.isActiveAndEnabled)
+                view.recordings.Show();
+        }
         private void BindView(RoomFlowView view)
         {
             view.ShowHome();
@@ -54,7 +61,7 @@ namespace Mishi.Networking
                     {
                         view.recordings.gameObject.SetActive(true);
                         view.replay.GetComponentInChildren<TMPro.TMP_Text>().text = "播放选中的录像";
-                        view.recordings.Show(); return;
+                        StartCoroutine(OpenRecordingSelector(view)); return;
                     }
                     replayPath = files[view.recordings.value]; launchPending = false; SceneManager.LoadScene(BattleScene);
                 });

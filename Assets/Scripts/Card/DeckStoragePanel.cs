@@ -8,6 +8,7 @@ public sealed class DeckStoragePanel : MonoBehaviour
 {
     [SerializeField] private TMP_InputField deckName;
     [SerializeField] private Button save;
+    [SerializeField] private Button newDeck;
     [SerializeField] private TMP_Dropdown deckSelector;
     [SerializeField] private TMP_Text message;
     private string overwriteName;
@@ -17,6 +18,7 @@ public sealed class DeckStoragePanel : MonoBehaviour
     private void Awake()
     {
         save.onClick.AddListener(Save);
+        newDeck.onClick.AddListener(CreateDeck);
         deckSelector.onValueChanged.AddListener(SelectDeck);
         deckName.onValueChanged.AddListener(_ => overwriteName = null);
     }
@@ -42,6 +44,18 @@ public sealed class DeckStoragePanel : MonoBehaviour
         appliedIndex = Array.IndexOf(names, service.SelectedDeckName) + 1;
         deckSelector.SetValueWithoutNotify(appliedIndex);
         deckSelector.interactable = names.Length > 0;
+    }
+    private void CreateDeck()
+    {
+        try
+        {
+            CardDatabaseService.Instance.NewDeck();
+            deckName.SetTextWithoutNotify(""); overwriteName = null;
+            RefreshOptions();
+            message.text = "已新建空白卡组，请先选择契约时魔。";
+            deckName.Select(); deckName.ActivateInputField();
+        }
+        catch (Exception e) { message.text = e.Message; }
     }
     private void Save()
     {
