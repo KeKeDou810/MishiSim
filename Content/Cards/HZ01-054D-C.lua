@@ -43,7 +43,7 @@ return{
                 activeZone = "Player",
                 oncePerTurn = true,
                 condition = function(ctx)
-                    return ctx.event.target and ctx.event.target.owner == ctx.owner and hasContract(ctx, "维克多莉娅") and (true)
+                    return ctx.event.target ~= nil and ctx.event.target.owner == ctx.owner and hasContract(ctx, "维克多莉娅") and (true)
                 end,
                 costs = {
                     {
